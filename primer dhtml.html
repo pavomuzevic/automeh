@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Automehaničar - Rezervacije</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: #f4f4f4;
+}
+
+table {
+    width: 80%;
+    margin: 20px auto;
+    border-collapse: collapse;
+    background: white;
+}
+
+th, td {
+    padding: 10px;
+    border: 1px solid #ccc;
+    text-align: center;
+}
+
+button {
+    padding: 5px 10px;
+    background: red;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+</style>
+
+<script>
+function obrisiRezervaciju(id, dugme) {
+
+    if(confirm("Da li ste sigurni?")) {
+
+        fetch("delete.php?id=" + id)
+        .then(response => response.text())
+        .then(data => {
+            if(data === "success") {
+                // uklanja red iz tabele bez refresh-a
+                let red = dugme.closest("tr");
+                red.remove();
+            } else {
+                alert("Greška pri brisanju!");
+            }
+        });
+    }
+}
+</script>
+
+</head>
+<body>
+
+<h2 style="text-align:center;">Rezervacije</h2>
+
+<table>
+<tr>
+    <th>ID</th>
+    <th>Ime i prezime</th>
+    <th>Datum</th>
+    <th>Vreme</th>
+    <th>Opis</th>
+    <th>Akcija</th>
+</tr>
+
+<?php
+include 'db.php';
+$result = $conn->query("SELECT * FROM rezervacije");
+
+while($row = $result->fetch_assoc()) {
+    echo "<tr>
+        <td>{$row['id']}</td>
+        <td>{$row['ime_prezime']}</td>
+        <td>{$row['datum']}</td>
+        <td>{$row['vreme']}</td>
+        <td>{$row['opis']}</td>
+        <td>
+            <button onclick='obrisiRezervaciju({$row['id']}, this)'>
+                Obriši
+            </button>
+        </td>
+    </tr>";
+}
+?>
+
+</table>
+
+</body>
+</html>
